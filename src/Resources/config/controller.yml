@@ -1,0 +1,5 @@
+services:
+    Richardhj\ContaoEmailTokenLoginBundle\Controller\TokenLogin:
+        arguments:
+            - '@contao.framework'
+            

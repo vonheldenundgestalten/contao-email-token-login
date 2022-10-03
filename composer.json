@@ -1,5 +1,5 @@
 {
-  "name": "richardhj/contao-email-token-login",
+  "name": "vonheldenundgestalten/contao-email-token-login",
   "description": "",
   "keywords": [
     "contao"
@@ -11,11 +11,16 @@
       "name": "Richard Henkenjohann",
       "email": "richardhenkenjohann@googlemail.com",
       "role": "Developer"
+    },
+    {
+      "name": "Markus Milkereit",
+      "email": "mm@vonheldenundgestalten.com",
+      "role": "Developer"
     }
   ],
   "support": {
-    "issues": "https://github.com/richardhj/contao-email-token-login/issues",
-    "source": "https://github.com/richardhj/contao-email-token-login"
+    "issues": "https://github.com/vonheldenundgestalten/contao-email-token-login/issues",
+    "source": "https://github.com/vonheldenundgestalten/contao-email-token-login"
   },
   "require": {
     "php": ">=7.4",

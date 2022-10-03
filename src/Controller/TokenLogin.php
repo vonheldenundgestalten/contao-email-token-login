@@ -15,6 +15,10 @@ namespace Richardhj\ContaoEmailTokenLoginBundle\Controller;
 use Contao\CoreBundle\Exception\AccessDeniedException;
 use Contao\CoreBundle\Exception\PageNotFoundException;
 use Contao\FrontendUser;
+use Contao\PageModel;
+use Contao\CoreBundle\Framework\ContaoFramework;
+
+use Contao\System;
 use Contao\MemberModel;
 use Doctrine\DBAL\Connection;
 use Psr\Log\LoggerInterface;
@@ -35,6 +39,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class TokenLogin extends AbstractController
 {
+    private ContaoFramework $framework;
+    
+    
     private UserProviderInterface $userProvider;
     private TokenStorageInterface $tokenStorage;
     private Connection $connection;
@@ -69,8 +76,19 @@ class TokenLogin extends AbstractController
         ;
 
         $result = $statement->fetchAssociative();
+        
+        // Set the root page for the domain as the pageModel attribute
+        // error pages don't work without this!
+        $root = $this->findFirstPublishedRootByHostAndLanguage($request->getHost(), $request->getLocale());
 
+        if (null !== $root) {
+            $root->loadDetails();
+            $request->attributes->set('pageModel', $root);
+            $GLOBALS['objPage'] = $root;
+        }
+        
         if (false === $result) {
+            System::getContainer()->get('monolog.logger.contao.error')->error('Token not found or expired '.$token);
             throw new AccessDeniedException('Token not found or expired: '.$token);
         }
 
@@ -133,5 +151,14 @@ class TokenLogin extends AbstractController
             ->setParameter('id', $tokenId)
             ->executeStatement()
         ;
+    }
+    
+    protected function findFirstPublishedRootByHostAndLanguage(string $host, string $language): ?PageModel
+    {
+        $columns = ["type='root' AND (dns=? OR dns='') AND (language=? OR fallback='1')"];
+        $values = [$host, $language];
+        $options = ['order' => 'dns DESC, fallback'];
+
+        return PageModel::findOneBy($columns, $values, $options);
     }
 }
